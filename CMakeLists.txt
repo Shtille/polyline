@@ -16,6 +16,10 @@ set(SRC_FILES
 	src/drawer.h
 	src/types.h
 	src/viewport.h
+	src/drawer/old_quad_drawer.cpp
+	src/drawer/old_quad_drawer.h
+	src/drawer/quad_drawer.cpp
+	src/drawer/quad_drawer.h
 	)
 set(CAPS_LIBRARIES
 	glad
