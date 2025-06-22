@@ -1,3 +1,3 @@
 # Polyline
 
-A polyline rendering application.
+An OpenGL-based polyline rendering application.

@@ -11,6 +11,7 @@ Drawer::Drawer(const Viewport* viewport)
 , vertex_buffer_object_(0)
 , num_vertices_(0)
 , vertices_array_(nullptr)
+, pixel_width_(20.0f)
 {
 
 }
@@ -21,9 +22,9 @@ Drawer::~Drawer()
 bool Drawer::Create(const PointArray& points)
 {
 	if (!LoadShaders(
-		"data/shaders/point/point.vs", 
-		"data/shaders/point/point.fs", 
-		"data/shaders/point/point.gs", 
+		"data/shaders/quad/quad.vs", 
+		"data/shaders/quad/quad.fs", 
+		"data/shaders/quad/quad.gs", 
 		program_))
 		return false;
 
@@ -57,7 +58,7 @@ void Drawer::Render()
 	ActivateShader();
 
 	glBindVertexArray(vertex_array_object_);
-	glDrawArrays(GL_POINTS, 0, num_vertices_);
+	glDrawArrays(GL_POINTS, 0, num_vertices_-1);
 	glBindVertexArray(0);
 
 	DeactivateShader();
@@ -104,16 +105,24 @@ void Drawer::MakeRenderable()
 	// Attributes layout
 	const GLsizei stride = sizeof(Vertex);
 	const uint8_t* base = nullptr;
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, base); // vec2 a_position
+	const uint8_t* curr_offset = base;
+	const uint8_t* next_offset = curr_offset + stride;
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, curr_offset); // vec2 a_position_curr
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, next_offset); // vec2 a_position_next
+	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
 }
 void Drawer::ActivateShader()
 {
+	int location;
+
 	glUseProgram(program_);
-	int location = glGetUniformLocation(program_, "u_aspect_ratio");
-	glUniform1f(location, viewport_->aspect_ratio);
+	location = glGetUniformLocation(program_, "u_viewport");
+	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
+	location = glGetUniformLocation(program_, "u_pixel_width");
+	glUniform1f(location, pixel_width_);
 }
 void Drawer::DeactivateShader()
 {

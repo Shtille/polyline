@@ -38,6 +38,7 @@ private:
 	uint32_t vertex_buffer_object_;
 	uint32_t num_vertices_;
 	uint8_t* vertices_array_;
+	const float pixel_width_;
 };
 
 } // namespace poly
