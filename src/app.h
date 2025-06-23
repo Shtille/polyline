@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 
 #include "types.h"
 #include "viewport.h"
-#include "drawer.h"
+#include "drawer/polyline_drawer.h"
 
 namespace poly {
 
@@ -23,7 +23,7 @@ public:
 private:
 	Viewport viewport_;
 	PointArray points_;
-	Drawer drawer_;
+	PolylineDrawer drawer_;
 };
 
 } // namespace poly

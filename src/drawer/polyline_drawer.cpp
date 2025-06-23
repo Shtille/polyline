@@ -1,10 +1,10 @@
-#include "drawer.h"
+﻿#include "polyline_drawer.h"
 
-#include "util.h"
+#include "../util.h"
 
 namespace poly {
 
-Drawer::Drawer(const Viewport* viewport)
+PolylineDrawer::PolylineDrawer(const Viewport* viewport)
 : viewport_(viewport)
 , program_(0)
 , vertex_array_object_(0)
@@ -15,16 +15,16 @@ Drawer::Drawer(const Viewport* viewport)
 {
 
 }
-Drawer::~Drawer()
+PolylineDrawer::~PolylineDrawer()
 {
 	Destroy();
 }
-bool Drawer::Create(const PointArray& points)
+bool PolylineDrawer::Create(const PointArray& points)
 {
 	if (!LoadShaders(
-		"data/shaders/quad/quad.vs", 
-		"data/shaders/quad/quad.fs", 
-		"data/shaders/quad/quad.gs", 
+		"data/shaders/polyline/polyline.vs", 
+		"data/shaders/polyline/polyline.fs", 
+		"data/shaders/polyline/polyline.gs", 
 		program_))
 		return false;
 
@@ -34,7 +34,7 @@ bool Drawer::Create(const PointArray& points)
 
 	return true;
 }
-void Drawer::Destroy()
+void PolylineDrawer::Destroy()
 {
 	FreeArrays();
 	if (program_ != 0)
@@ -53,7 +53,7 @@ void Drawer::Destroy()
 		vertex_array_object_ = 0;
 	}
 }
-void Drawer::Render()
+void PolylineDrawer::Render()
 {
 	ActivateShader();
 
@@ -63,7 +63,7 @@ void Drawer::Render()
 
 	DeactivateShader();
 }
-bool Drawer::CreateData(const PointArray& points)
+bool PolylineDrawer::CreateData(const PointArray& points)
 {
 	uint32_t num_points = static_cast<uint32_t>(points.size());
 	if (num_points < 2) return false;
@@ -83,7 +83,7 @@ bool Drawer::CreateData(const PointArray& points)
 
 	return true;
 }
-void Drawer::FreeArrays()
+void PolylineDrawer::FreeArrays()
 {
 	if (vertices_array_ != nullptr)
 	{
@@ -91,7 +91,7 @@ void Drawer::FreeArrays()
 		vertices_array_ = nullptr;
 	}
 }
-void Drawer::MakeRenderable()
+void PolylineDrawer::MakeRenderable()
 {
 	glGenVertexArrays(1, &vertex_array_object_);
 	glBindVertexArray(vertex_array_object_);
@@ -114,7 +114,7 @@ void Drawer::MakeRenderable()
 
 	glBindVertexArray(0);
 }
-void Drawer::ActivateShader()
+void PolylineDrawer::ActivateShader()
 {
 	int location;
 
@@ -124,7 +124,7 @@ void Drawer::ActivateShader()
 	location = glGetUniformLocation(program_, "u_pixel_width");
 	glUniform1f(location, pixel_width_);
 }
-void Drawer::DeactivateShader()
+void PolylineDrawer::DeactivateShader()
 {
 	glUseProgram(0);
 }

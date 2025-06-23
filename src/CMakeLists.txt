@@ -6,10 +6,10 @@ set(SRC_FILES
 	util.h
 	app.cpp
 	app.h
-	drawer.cpp
-	drawer.h
 	types.h
 	viewport.h
+	drawer/polyline_drawer.cpp
+	drawer/polyline_drawer.h
 	drawer/old_quad_drawer.cpp
 	drawer/old_quad_drawer.h
 	drawer/quad_drawer.cpp

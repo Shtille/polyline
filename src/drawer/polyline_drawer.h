@@ -1,15 +1,18 @@
-#pragma once
+﻿#pragma once
 
-#include "types.h"
-#include "viewport.h"
+#include "../types.h"
+#include "../viewport.h"
 
 namespace poly {
 
-class Drawer
+/**
+ * @brief      This class describes a quad drawer with geometry shader.
+ */
+class PolylineDrawer
 {
 public:
-	Drawer(const Viewport* viewport);
-	~Drawer();
+	PolylineDrawer(const Viewport* viewport);
+	~PolylineDrawer();
 
 	bool Create(const PointArray& points);
 	void Destroy();
