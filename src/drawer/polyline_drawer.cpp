@@ -58,7 +58,7 @@ void PolylineDrawer::Render()
 	ActivateShader();
 
 	glBindVertexArray(vertex_array_object_);
-	glDrawArrays(GL_POINTS, 0, num_vertices_-1);
+	glDrawArrays(GL_POINTS, 0, num_vertices_ - 2);
 	glBindVertexArray(0);
 
 	DeactivateShader();
@@ -68,17 +68,20 @@ bool PolylineDrawer::CreateData(const PointArray& points)
 	uint32_t num_points = static_cast<uint32_t>(points.size());
 	if (num_points < 2) return false;
 
-	num_vertices_ = num_points;
+	num_vertices_ = num_points + 1;
 	vertices_array_ = new uint8_t[num_vertices_ * sizeof(Vertex)];
 	Vertex* vertices = reinterpret_cast<Vertex*>(vertices_array_);
 
-	for (uint32_t i = 0; i < num_vertices_; ++i)
+	Point first_point;
+	first_point[0] = points[0][0] + (points[0][0] - points[1][0]);
+	first_point[1] = points[0][1] + (points[0][1] - points[1][1]);
+	vertices[0].position = first_point;
+	for (uint32_t i = 0; i < num_points; ++i)
 	{
-		Vertex& vertex = vertices[i];
+		Vertex& vertex = vertices[i+1];
 		const Point& point = points[i];
 
-		vertex.point_x = point[0];
-		vertex.point_y = point[1];
+		vertex.position = {point[0], point[1]};
 	}
 
 	return true;
@@ -105,12 +108,15 @@ void PolylineDrawer::MakeRenderable()
 	// Attributes layout
 	const GLsizei stride = sizeof(Vertex);
 	const uint8_t* base = nullptr;
-	const uint8_t* curr_offset = base;
+	const uint8_t* prev_offset = base;
+	const uint8_t* curr_offset = prev_offset + stride;
 	const uint8_t* next_offset = curr_offset + stride;
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, curr_offset); // vec2 a_position_curr
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, prev_offset); // vec2 a_position_prev
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, next_offset); // vec2 a_position_next
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, curr_offset); // vec2 a_position_curr
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, next_offset); // vec2 a_position_next
+	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
 }

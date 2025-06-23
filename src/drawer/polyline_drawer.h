@@ -23,8 +23,7 @@ protected:
 
 	struct Vertex
 	{
-		float point_x;
-		float point_y;
+		Point position;
 	};
 
 	bool CreateData(const PointArray& points);
