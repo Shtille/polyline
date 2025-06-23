@@ -1,4 +1,4 @@
-#include "old_quad_drawer.h"
+﻿#include "old_quad_drawer.h"
 
 #include "../util.h"
 
@@ -115,10 +115,10 @@ bool OldQuadDrawer::CreateData(const PointArray& points)
 	n = 0;
 	for (uint32_t i = 0; i < total_segments; ++i)
 	{
-		vertices[n++].texcoord = {-1.0f,  1.0f};
-		vertices[n++].texcoord = {-1.0f, -1.0f};
-		vertices[n++].texcoord = { 1.0f,  1.0f};
-		vertices[n++].texcoord = { 1.0f, -1.0f};
+		vertices[n++].texcoord = { 0.0f,  1.0f};
+		vertices[n++].texcoord = { 0.0f, -1.0f};
+		vertices[n++].texcoord = { 0.0f,  1.0f};
+		vertices[n++].texcoord = { 0.0f, -1.0f};
 	}
 
 	// Indices
@@ -160,8 +160,8 @@ void OldQuadDrawer::MakeRenderable()
 	glBufferData(GL_ARRAY_BUFFER, num_vertices_ * sizeof(Vertex), vertices_array_, GL_STATIC_DRAW);
 
 	glGenBuffers(1, &index_buffer_object_);
-	glBindBuffer(GL_ARRAY_BUFFER, index_buffer_object_);
-	glBufferData(GL_ARRAY_BUFFER, num_indices_ * index_size_, indices_array_, GL_STATIC_DRAW);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_object_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_indices_ * index_size_, indices_array_, GL_STATIC_DRAW);
 
 	FreeArrays();
 
