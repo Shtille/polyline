@@ -2,6 +2,7 @@
 #include "viewport.h"
 #include "drawer/quad_drawer.h"
 #include "drawer/old_quad_drawer.h"
+#include "time_elapsed_query.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -17,6 +18,31 @@ namespace {
 	poly::OldQuadDrawer* old_drawer = nullptr;
 	poly::PointArray points;
 
+	void TestIteration()
+	{
+		poly::TimeElapsedQuery query;
+
+		std::cout << "--- iteration begin" << std::endl;
+		{
+			query.Begin();
+			old_drawer->Render();
+			query.End();
+			if (query.GetResult(true))
+			{
+				std::cout << "old took " << query.GetElapsedTime() << " ns" << std::endl;
+			}
+		}
+		{
+			query.Begin();
+			new_drawer->Render();
+			query.End();
+			if (query.GetResult(true))
+			{
+				std::cout << "new took " << query.GetElapsedTime() << " ns" << std::endl;
+			}
+		}
+		std::cout << "--- iteration end" << std::endl;
+	}
 	void SetViewport(int width, int height)
 	{
 		viewport.width = width;
@@ -52,7 +78,7 @@ namespace {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		old_drawer->Render();
+		TestIteration();
 	}
 }
 
@@ -101,22 +127,12 @@ int main()
 		return 1;
 	}
 
-	// render loop
-	// -----------
-	while (!glfwWindowShouldClose(window))
+	// Test different approaches with few iterations
+	// ---------------------------------------------
+	for (int i = 0; i < 3; ++i)
 	{
-		// input
-		// -----
-		processInput(window);
-
-		// render
-		// ------
 		Render();
-
-		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-		// -------------------------------------------------------------------------------
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
 
 	// Unload application data

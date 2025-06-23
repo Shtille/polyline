@@ -2,6 +2,8 @@
 
 set(SRC_FILES
 	main.cpp
+	time_elapsed_query.cpp
+	time_elapsed_query.h
 	../src/util.cpp
 	../src/util.h
 	../src/types.h
