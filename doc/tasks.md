@@ -8,8 +8,8 @@
 4.  [x] Add bevel join.
 5.  [x] Add miter join.
 6.  [ ] Add round join.
-7.  [ ] Add join style switch.
-8.  [ ] Add flat cap.
+7.  [x] Add join style switch.
+8.  [x] Add flat cap.
 9.  [ ] Add square cap.
 10. [ ] Add round cap.
 11. [ ] Add cap style switch.
