@@ -17,7 +17,7 @@ void main()
 	float len = v_length;
 	float radius = v_radius;
 
-	bool is_join = point_type > -0.5 && point_type < 0.5;
+	bool is_join = abs(point_type) < 0.5;
 	bool need_discard = !is_join && u_cap_style == 2 || is_join && u_join_style == 2;
 
 	if (need_discard && position.x < 0.0)

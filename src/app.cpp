@@ -1,4 +1,4 @@
-#include "app.h"
+﻿#include "app.h"
 
 #include <glad/glad.h>
 
@@ -41,6 +41,14 @@ void Application::SetViewport(int width, int height)
 	viewport_.height = height;
 	viewport_.aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
 }
+void Application::SetCapStyle(CapStyle cap_style)
+{
+	drawer_.SetCapStyle(cap_style);
+}
+void Application::SetJoinStyle(JoinStyle join_style)
+{
+	drawer_.SetJoinStyle(join_style);
+}
 int Application::width() const
 {
 	return viewport_.width;
@@ -52,6 +60,14 @@ int Application::height() const
 float Application::aspect_ratio() const
 {
 	return viewport_.aspect_ratio;
+}
+CapStyle Application::cap_style() const
+{
+	return drawer_.cap_style();
+}
+JoinStyle Application::join_style() const
+{
+	return drawer_.join_style();
 }
 
 } // namespace poly

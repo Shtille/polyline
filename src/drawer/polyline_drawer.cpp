@@ -15,8 +15,8 @@ PolylineDrawer::PolylineDrawer(const Viewport* viewport)
 , vertices_array_(nullptr)
 , pixel_width_(20.0f)
 , miter_limit_(3.0f)
-, cap_style_(CapStyle::kRound)
-, join_style_(JoinStyle::kRound)
+, cap_style_(CapStyle::kFlat)
+, join_style_(JoinStyle::kBevel)
 {
 
 }
@@ -188,6 +188,22 @@ void PolylineDrawer::ActivateShader()
 void PolylineDrawer::DeactivateShader()
 {
 	glUseProgram(0);
+}
+void PolylineDrawer::SetCapStyle(CapStyle cap_style)
+{
+	cap_style_ = cap_style;
+}
+void PolylineDrawer::SetJoinStyle(JoinStyle join_style)
+{
+	join_style_ = join_style;
+}
+CapStyle PolylineDrawer::cap_style() const
+{
+	return cap_style_;
+}
+JoinStyle PolylineDrawer::join_style() const
+{
+	return join_style_;
 }
 
 } // namespace poly

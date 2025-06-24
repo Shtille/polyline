@@ -7,13 +7,14 @@
 3.  [x] Draw polyline via quads.
 4.  [x] Add bevel join.
 5.  [x] Add miter join.
-6.  [ ] Add round join.
+6.  [x] Add round join.
 7.  [x] Add join style switch.
 8.  [x] Add flat cap.
 9.  [x] Add square cap.
-10. [ ] Add round cap.
-11. [ ] Add cap style switch.
+10. [x] Add round cap.
+11. [x] Add cap style switch.
 
 ## Secondary tasks
 
 1. [x] Add old vs new method performance comparison.
+2. [x] Add application possibility to switch cap styles and join styles.

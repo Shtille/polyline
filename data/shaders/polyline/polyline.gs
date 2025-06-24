@@ -50,44 +50,22 @@ void build_quad(vec4 prev, vec4 curr, vec4 next)
 	vec2 n2 = vec2(-d2.y, d2.x);
 
 	float w = u_pixel_width * 0.5;
+	float point_type_curr = gs_in[0].point_type_curr;
+	float point_type_next = gs_in[0].point_type_next;
 
-	if (u_join_style == 0) // bevel join
+	if (abs(point_type_curr) < 0.5) // current point is join, not start point
 	{
-		// Bevel triangle
-		float signed_z = w * sign(d1.x*d2.y - d2.x*d1.y);
-		gl_Position = unproject(screen_curr - n1 * signed_z, curr.z, curr.w);
-		v_position = vec2(0.0);
-		v_point_type = 0.0;
-		v_length = segment_length;
-		v_radius = w;
-		EmitVertex();
-		gl_Position = unproject(screen_curr - n2 * signed_z, curr.z, curr.w);
-		v_position = vec2(0.0);
-		v_point_type = 0.0;
-		v_length = segment_length;
-		v_radius = w;
-		EmitVertex();
-		gl_Position = curr;
-		v_position = vec2(0.0);
-		v_point_type = 0.0;
-		v_length = segment_length;
-		v_radius = w;
-		EmitVertex();
-		EndPrimitive();
-	}
-	else if (u_join_style == 1) // miter join
-	{
-		// Miter quad
-		float cos_a = dot(-d1, d2);
-		float miter_limit = u_miter_limit * w;
-		float miter_distance = w * sqrt((1.0 + cos_a) / (1.0 - cos_a));
-		if (cos_a < 0.98 && miter_distance < miter_limit)
+		if (u_join_style == 0) // bevel join
 		{
+			// Bevel triangle
 			float signed_z = w * sign(d1.x*d2.y - d2.x*d1.y);
-			vec2 first_point  = screen_curr - n1 * signed_z;
-			vec2 second_point = screen_curr - n2 * signed_z;
-			vec2 miter_point  = first_point + d1 * miter_distance;
-			gl_Position = unproject(first_point, curr.z, curr.w);
+			gl_Position = unproject(screen_curr - n1 * signed_z, curr.z, curr.w);
+			v_position = vec2(0.0);
+			v_point_type = 0.0;
+			v_length = segment_length;
+			v_radius = w;
+			EmitVertex();
+			gl_Position = unproject(screen_curr - n2 * signed_z, curr.z, curr.w);
 			v_position = vec2(0.0);
 			v_point_type = 0.0;
 			v_length = segment_length;
@@ -99,24 +77,81 @@ void build_quad(vec4 prev, vec4 curr, vec4 next)
 			v_length = segment_length;
 			v_radius = w;
 			EmitVertex();
-			gl_Position = unproject(miter_point, curr.z, curr.w);
-			v_position = vec2(0.0);
-			v_point_type = 0.0;
+			EndPrimitive();
+		}
+		else if (u_join_style == 1) // miter join
+		{
+			// Miter quad
+			float cos_a = dot(-d1, d2);
+			float miter_limit = u_miter_limit * w;
+			float miter_distance = w * sqrt((1.0 + cos_a) / (1.0 - cos_a));
+			if (cos_a < 0.98 && miter_distance < miter_limit)
+			{
+				float signed_z = w * sign(d1.x*d2.y - d2.x*d1.y);
+				vec2 first_point  = screen_curr - n1 * signed_z;
+				vec2 second_point = screen_curr - n2 * signed_z;
+				vec2 miter_point  = first_point + d1 * miter_distance;
+				gl_Position = unproject(first_point, curr.z, curr.w);
+				v_position = vec2(0.0);
+				v_point_type = 0.0;
+				v_length = segment_length;
+				v_radius = w;
+				EmitVertex();
+				gl_Position = curr;
+				v_position = vec2(0.0);
+				v_point_type = 0.0;
+				v_length = segment_length;
+				v_radius = w;
+				EmitVertex();
+				gl_Position = unproject(miter_point, curr.z, curr.w);
+				v_position = vec2(0.0);
+				v_point_type = 0.0;
+				v_length = segment_length;
+				v_radius = w;
+				EmitVertex();
+				gl_Position = unproject(second_point, curr.z, curr.w);
+				v_position = vec2(0.0);
+				v_point_type = 0.0;
+				v_length = segment_length;
+				v_radius = w;
+				EmitVertex();
+				EndPrimitive();
+			}
+		}
+		else // round join
+		{
+			vec2 p1 = screen_curr + n2 * w;
+			vec2 p2 = p1 - d2 * w;
+			vec2 p3 = screen_curr - n2 * w;
+			vec2 p4 = p3 - d2 * w;
+
+			gl_Position = unproject(p1, curr.z, curr.w);
+			v_position = vec2(0.0, w);
+			v_point_type = point_type_curr;
 			v_length = segment_length;
 			v_radius = w;
 			EmitVertex();
-			gl_Position = unproject(second_point, curr.z, curr.w);
-			v_position = vec2(0.0);
-			v_point_type = 0.0;
+			gl_Position = unproject(p2, curr.z, curr.w);
+			v_position = vec2(-w, w);
+			v_point_type = point_type_curr;
+			v_length = segment_length;
+			v_radius = w;
+			EmitVertex();
+			gl_Position = unproject(p3, curr.z, curr.w);
+			v_position = vec2(0.0, -w);
+			v_point_type = point_type_curr;
+			v_length = segment_length;
+			v_radius = w;
+			EmitVertex();
+			gl_Position = unproject(p4, curr.z, curr.w);
+			v_position = vec2(-w, -w);
+			v_point_type = point_type_curr;
 			v_length = segment_length;
 			v_radius = w;
 			EmitVertex();
 			EndPrimitive();
 		}
 	}
-
-	float point_type_curr = gs_in[0].point_type_curr;
-	float point_type_next = gs_in[0].point_type_next;
 
 	vec2 curr_offset_x = vec2(0.0);
 	vec2 next_offset_x = vec2(0.0);

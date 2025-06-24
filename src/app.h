@@ -15,10 +15,14 @@ public:
 	void Render();
 
 	void SetViewport(int width, int height);
+	void SetCapStyle(CapStyle cap_style);
+	void SetJoinStyle(JoinStyle join_style);
 
 	int width() const;
 	int height() const;
 	float aspect_ratio() const;
+	CapStyle cap_style() const;
+	JoinStyle join_style() const;
 
 private:
 	Viewport viewport_;

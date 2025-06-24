@@ -19,6 +19,12 @@ public:
 
 	void Render();
 
+	void SetCapStyle(CapStyle cap_style);
+	void SetJoinStyle(JoinStyle join_style);
+
+	CapStyle cap_style() const;
+	JoinStyle join_style() const;
+
 protected:
 
 	struct Vertex

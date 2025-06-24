@@ -1,14 +1,20 @@
-#include "app.h"
+﻿#include "app.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <string>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+std::string get_title();
 
+static const int kCapKey = GLFW_KEY_C;
+static const int kJoinKey = GLFW_KEY_J;
 static poly::Application* s_app = nullptr;
+static bool s_cap_key_pressed = false;
+static bool s_join_key_pressed = false;
 
 int main()
 {
@@ -30,7 +36,7 @@ int main()
 
 	// glfw window creation
 	// --------------------
-	GLFWwindow* window = glfwCreateWindow(app.width(), app.height(), "Polyline", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(app.width(), app.height(), get_title().c_str(), NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -84,12 +90,82 @@ int main()
 	return 0;
 }
 
+static poly::CapStyle GetNextCapStyle(poly::CapStyle style)
+{
+	uint32_t curr = static_cast<uint32_t>(style);
+	uint32_t next = (curr + 1) % 3;
+	return static_cast<poly::CapStyle>(next);
+}
+static poly::JoinStyle GetNextJoinStyle(poly::JoinStyle style)
+{
+	uint32_t curr = static_cast<uint32_t>(style);
+	uint32_t next = (curr + 1) % 3;
+	return static_cast<poly::JoinStyle>(next);
+}
+
+std::string get_title()
+{
+	auto cap_style = s_app->cap_style();
+	auto join_style = s_app->join_style();
+	std::string title = "Polyline (";
+	switch (cap_style)
+	{
+	case poly::CapStyle::kFlat:
+		title += "flat cap, ";
+		break;
+	case poly::CapStyle::kSquare:
+		title += "square cap, ";
+		break;
+	case poly::CapStyle::kRound:
+		title += "round cap, ";
+		break;
+	}
+	switch (join_style)
+	{
+	case poly::JoinStyle::kBevel:
+		title += "bevel join)";
+		break;
+	case poly::JoinStyle::kMiter:
+		title += "miter join)";
+		break;
+	case poly::JoinStyle::kRound:
+		title += "round join)";
+		break;
+	}
+	return title;
+}
+
+static void UpdateTitle(GLFWwindow *window)
+{
+	glfwSetWindowTitle(window, get_title().c_str());
+}
+
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, kCapKey) == GLFW_PRESS && !s_cap_key_pressed)
+	{
+		s_cap_key_pressed = true;
+		s_app->SetCapStyle(GetNextCapStyle(s_app->cap_style()));
+		UpdateTitle(window);
+	}
+	else if (glfwGetKey(window, kCapKey) == GLFW_RELEASE)
+	{
+		s_cap_key_pressed = false;
+	}
+	if (glfwGetKey(window, kJoinKey) == GLFW_PRESS && !s_join_key_pressed)
+	{
+		s_join_key_pressed = true;
+		s_app->SetJoinStyle(GetNextJoinStyle(s_app->join_style()));
+		UpdateTitle(window);
+	}
+	else if (glfwGetKey(window, kJoinKey) == GLFW_RELEASE)
+	{
+		s_join_key_pressed = false;
+	}
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
