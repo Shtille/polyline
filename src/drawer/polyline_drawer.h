@@ -25,6 +25,7 @@ protected:
 	{
 		Point position;
 		float point_type;
+		float distance;
 	};
 
 	bool CreateData(const PointArray& points);

@@ -2,6 +2,8 @@
 
 #include "../util.h"
 
+#include <cmath>
+
 namespace poly {
 
 PolylineDrawer::PolylineDrawer(const Viewport* viewport)
@@ -13,8 +15,8 @@ PolylineDrawer::PolylineDrawer(const Viewport* viewport)
 , vertices_array_(nullptr)
 , pixel_width_(20.0f)
 , miter_limit_(3.0f)
-, cap_style_(CapStyle::kFlat)
-, join_style_(JoinStyle::kBevel)
+, cap_style_(CapStyle::kRound)
+, join_style_(JoinStyle::kRound)
 {
 
 }
@@ -103,6 +105,20 @@ bool PolylineDrawer::CreateData(const PointArray& points)
 	}
 	vertices[n++].point_type = 0.0f; // value here doesn't matter
 
+	// Distance
+	n = 0;
+	vertices[n++].distance = 0.0f;
+	vertices[n++].distance = 0.0f; // point 0
+	for (uint32_t i = 1; i < num_points; ++i)
+	{
+		const Point& point1 = points[i-1];
+		const Point& point2 = points[i];
+		float dx = point2[0] - point1[0];
+		float dy = point2[1] - point1[1];
+		vertices[n++].distance = sqrt(dx * dx + dy * dy);
+	}
+	vertices[n++].distance = vertices[n-1].distance;
+
 	return true;
 }
 void PolylineDrawer::FreeArrays()
@@ -134,6 +150,8 @@ void PolylineDrawer::MakeRenderable()
 	const uint8_t* next_offset = curr_offset + stride;
 	const uint8_t* point_type_curr_offset = curr_offset + sizeof(Point);
 	const uint8_t* point_type_next_offset = point_type_curr_offset + stride;
+	const uint8_t* distance_curr_offset = point_type_curr_offset + sizeof(float);
+	const uint8_t* distance_next_offset = distance_curr_offset + stride;
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, prev_offset); // vec2 a_position_prev
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, curr_offset); // vec2 a_position_curr
@@ -144,6 +162,10 @@ void PolylineDrawer::MakeRenderable()
 	glEnableVertexAttribArray(3);
 	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, stride, point_type_next_offset); // float a_point_type_next
 	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, stride, distance_curr_offset); // float a_distance_curr
+	glEnableVertexAttribArray(5);
+	glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, stride, distance_next_offset); // float a_distance_next
+	glEnableVertexAttribArray(6);
 
 	glBindVertexArray(0);
 }
