@@ -1,4 +1,4 @@
-#include "util.h"
+﻿#include "util.h"
 
 #include <string>
 #include <vector>
@@ -64,6 +64,7 @@ namespace poly {
 			glDeleteShader(vertexShader);
 
 			// Use the infoLog as you see fit.
+			fprintf(stderr, "Error during vertex shader '%s' compilation:\n", vertex_file);
 			fprintf(stderr, "%s\n", &infoLog[0]);
 			
 			// In this simple program, we'll just leave
@@ -100,6 +101,7 @@ namespace poly {
 				glDeleteShader(vertexShader);
 
 				// Use the infoLog as you see fit.
+				fprintf(stderr, "Error during geometry shader '%s' compilation:\n", geometry_file);
 				fprintf(stderr, "%s\n", &infoLog[0]);
 				
 				// In this simple program, we'll just leave
@@ -136,6 +138,7 @@ namespace poly {
 				glDeleteShader(geometryShader);
 
 			// Use the infoLog as you see fit.
+			fprintf(stderr, "Error during fragment shader '%s' compilation:\n", fragment_file);
 			fprintf(stderr, "%s\n", &infoLog[0]);
 			
 			// In this simple program, we'll just leave
@@ -177,6 +180,7 @@ namespace poly {
 				glDeleteShader(geometryShader);
 
 			// Use the infoLog as you see fit.
+			fprintf(stderr, "Error during shader linkage:\n");
 			fprintf(stderr, "%s\n", &infoLog[0]);
 			
 			// In this simple program, we'll just leave
