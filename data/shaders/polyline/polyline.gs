@@ -77,21 +77,25 @@ void build_quad(vec4 prev, vec4 curr, vec4 next)
 		}
 	}
 
-	// vec2 offset_x = vec2(0.0);
-	// vec2 offset_y = n2 * w;
-	// if (u_cap_style == 1) // square cap
-	// {
-
-	// }
+	vec2 curr_offset_x = vec2(0.0);
+	vec2 next_offset_x = vec2(0.0);
+	vec2 offset_y = n2 * w;
+	if (u_cap_style != 0) // not flat cap (square cap or round cap)
+	{
+		float mod_curr = gs_in[0].point_type_curr;
+		float mod_next = gs_in[0].point_type_next;
+		curr_offset_x = d2 * (w * mod_curr);
+		next_offset_x = d2 * (w * mod_next);
+	}
 
 	// Quad
-	gl_Position = unproject(screen_curr + n2 * w, curr.z, curr.w); // left top
+	gl_Position = unproject(screen_curr + offset_y + curr_offset_x, curr.z, curr.w); // left top
 	EmitVertex();
-	gl_Position = unproject(screen_curr - n2 * w, curr.z, curr.w); // left bottom
+	gl_Position = unproject(screen_curr - offset_y + curr_offset_x, curr.z, curr.w); // left bottom
 	EmitVertex();
-	gl_Position = unproject(screen_next + n2 * w, next.z, next.w); // right top
+	gl_Position = unproject(screen_next + offset_y + next_offset_x, next.z, next.w); // right top
 	EmitVertex();   
-	gl_Position = unproject(screen_next - n2 * w, next.z, next.w); // right bottom
+	gl_Position = unproject(screen_next - offset_y + next_offset_x, next.z, next.w); // right bottom
 	EmitVertex();
 	EndPrimitive();
 }

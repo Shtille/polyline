@@ -10,7 +10,7 @@
 6.  [ ] Add round join.
 7.  [x] Add join style switch.
 8.  [x] Add flat cap.
-9.  [ ] Add square cap.
+9.  [x] Add square cap.
 10. [ ] Add round cap.
 11. [ ] Add cap style switch.
 
