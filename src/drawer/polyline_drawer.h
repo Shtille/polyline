@@ -42,6 +42,7 @@ private:
 	uint32_t num_vertices_;
 	uint8_t* vertices_array_;
 	const float pixel_width_;
+	float miter_limit_;
 	CapStyle cap_style_;
 	JoinStyle join_style_;
 };

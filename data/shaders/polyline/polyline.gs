@@ -5,6 +5,7 @@ layout (triangle_strip, max_vertices = 8) out;
 
 uniform vec4 u_viewport;
 uniform float u_pixel_width;
+uniform float u_miter_limit;
 uniform int u_cap_style; // flat, square, round
 uniform int u_join_style; // bevel, miter, round
 
@@ -57,7 +58,7 @@ void build_quad(vec4 prev, vec4 curr, vec4 next)
 	{
 		// Miter quad
 		float cos_a = dot(-d1, d2);
-		float miter_limit = 3.0 * w;
+		float miter_limit = u_miter_limit * w;
 		float miter_distance = w * sqrt((1.0 + cos_a) / (1.0 - cos_a));
 		if (cos_a < 0.98 && miter_distance < miter_limit)
 		{

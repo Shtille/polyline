@@ -12,6 +12,7 @@ PolylineDrawer::PolylineDrawer(const Viewport* viewport)
 , num_vertices_(0)
 , vertices_array_(nullptr)
 , pixel_width_(20.0f)
+, miter_limit_(3.0f)
 , cap_style_(CapStyle::kFlat)
 , join_style_(JoinStyle::kBevel)
 {
@@ -155,6 +156,8 @@ void PolylineDrawer::ActivateShader()
 	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
 	location = glGetUniformLocation(program_, "u_pixel_width");
 	glUniform1f(location, pixel_width_);
+	location = glGetUniformLocation(program_, "u_miter_limit");
+	glUniform1f(location, miter_limit_);
 	location = glGetUniformLocation(program_, "u_cap_style");
 	glUniform1i(location, static_cast<int>(cap_style_));
 	location = glGetUniformLocation(program_, "u_join_style");
