@@ -1,4 +1,4 @@
-#include "quad_drawer.h"
+﻿#include "quad_drawer.h"
 
 #include "../util.h"
 
@@ -77,8 +77,7 @@ bool QuadDrawer::CreateData(const PointArray& points)
 		Vertex& vertex = vertices[i];
 		const Point& point = points[i];
 
-		vertex.point_x = point[0];
-		vertex.point_y = point[1];
+		vertex.position = {point[0], point[1]};
 	}
 
 	return true;

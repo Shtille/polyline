@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../types.h"
 #include "../viewport.h"
@@ -23,8 +23,7 @@ protected:
 
 	struct Vertex
 	{
-		float point_x;
-		float point_y;
+		Point position;
 	};
 
 	bool CreateData(const PointArray& points);
