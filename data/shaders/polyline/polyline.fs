@@ -2,6 +2,8 @@
 
 uniform int u_cap_style; // flat, square, round
 uniform int u_join_style; // bevel, miter, round
+uniform float u_dash_period;
+uniform sampler1D u_texture;
 
 out vec4 color;
 
@@ -32,5 +34,14 @@ void main()
 		if (dist > radius)
 			discard;
 	}
-	color = vec4(1.0, 0.0, 0.0, 0.0);
+
+	// Transform pixel distance to range [0,1]
+	float texcoord_x = mod(position.x, u_dash_period) / u_dash_period;
+	float value = texture(u_texture, texcoord_x).x;
+	if (value < 0.5)
+	{
+		discard;
+	}
+
+	color = vec4(1.0, 0.0, 0.0, 1.0);
 }
