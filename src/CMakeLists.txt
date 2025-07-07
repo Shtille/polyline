@@ -16,6 +16,8 @@ set(SRC_FILES
 	drawer/quad_drawer.h
 	drawer/solid_polyline_drawer.cpp
 	drawer/solid_polyline_drawer.h
+	drawer/dash_polyline_drawer.cpp
+	drawer/dash_polyline_drawer.h
 	)
 set(LIBRARIES
 	glad
