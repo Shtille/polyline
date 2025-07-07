@@ -4,17 +4,17 @@ set(SRC_FILES
 	main.cpp
 	time_elapsed_query.cpp
 	time_elapsed_query.h
-	../src/util.cpp
-	../src/util.h
-	../src/types.h
-	../src/viewport.h
-	../src/drawer/old_quad_drawer.cpp
-	../src/drawer/old_quad_drawer.h
-	../src/drawer/quad_drawer.cpp
-	../src/drawer/quad_drawer.h
+	../polyline/util.cpp
+	../polyline/util.h
+	../polyline/types.h
+	../polyline/viewport.h
+	../polyline/drawer/old_quad_drawer.cpp
+	../polyline/drawer/old_quad_drawer.h
+	../polyline/drawer/quad_drawer.cpp
+	../polyline/drawer/quad_drawer.h
 	)
 set(INCLUDES
-	../src
+	../polyline
 	)
 set(LIBRARIES
 	glad

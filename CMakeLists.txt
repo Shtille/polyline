@@ -10,7 +10,7 @@ set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}")
 set(POLYLINE_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_subdirectory(deps)
-add_subdirectory(src)
+add_subdirectory(polyline)
 
 if (BUILD_TESTS)
 	add_subdirectory(tests)
