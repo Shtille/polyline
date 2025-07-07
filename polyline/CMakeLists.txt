@@ -2,12 +2,14 @@
 
 set(SRC_FILES
 	main.cpp
-	util.cpp
-	util.h
 	app.cpp
 	app.h
-	types.h
-	viewport.h
+	../common/base_app.cpp
+	../common/base_app.h
+	../common/util.cpp
+	../common/util.h
+	../common/types.h
+	../common/viewport.h
 	drawer/polyline_drawer.cpp
 	drawer/polyline_drawer.h
 	drawer/old_quad_drawer.cpp
@@ -19,12 +21,16 @@ set(SRC_FILES
 	drawer/dash_polyline_drawer.cpp
 	drawer/dash_polyline_drawer.h
 	)
+set(INCLUDES
+	../common
+	)
 set(LIBRARIES
 	glad
 	glfw
 	)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDES})
 target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 set_target_properties(${PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${POLYLINE_WORKING_DIRECTORY})

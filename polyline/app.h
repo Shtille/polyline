@@ -1,31 +1,25 @@
 ﻿#pragma once
 
-#include "types.h"
-#include "viewport.h"
+#include "base_app.h"
 #include "drawer/polyline_drawer.h"
 
 namespace poly {
 
-class Application {
+class Application : public BaseApplication {
 public:
 	Application();
 
-	bool Load();
-	void Unload();
-	void Render();
+	bool Load() override;
+	void Unload() override;
+	void Render() override;
 
-	void SetViewport(int width, int height);
 	void SetCapStyle(CapStyle cap_style);
 	void SetJoinStyle(JoinStyle join_style);
 
-	int width() const;
-	int height() const;
-	float aspect_ratio() const;
 	CapStyle cap_style() const;
 	JoinStyle join_style() const;
 
 private:
-	Viewport viewport_;
 	PointArray points_;
 	PolylineDrawer drawer_;
 };

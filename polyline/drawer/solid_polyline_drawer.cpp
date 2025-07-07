@@ -1,6 +1,6 @@
 ﻿#include "solid_polyline_drawer.h"
 
-#include "../util.h"
+#include "util.h"
 
 #include <cmath>
 

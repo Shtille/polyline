@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "../types.h"
-#include "../viewport.h"
+#include "types.h"
+#include "viewport.h"
 
 namespace poly {
 
