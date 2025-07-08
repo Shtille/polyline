@@ -38,8 +38,12 @@ private:
 	uint32_t program_;
 	uint32_t vertex_array_object_;
 	uint32_t vertex_buffer_object_;
+	uint32_t index_buffer_object_;
 	uint32_t num_vertices_;
+	uint32_t num_indices_;
+	uint32_t index_size_;
 	uint8_t* vertices_array_;
+	uint8_t* indices_array_;
 	float pixel_width_;
 };
 

@@ -1,14 +1,10 @@
 #version 330 core
 
-layout (points) in;
+layout (lines) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 uniform vec4 u_viewport;
 uniform float u_pixel_width;
-
-in VS_OUT {
-	vec4 position_next;
-} gs_in[];
 
 noperspective out vec2 v_position;
 flat out float v_length;
@@ -71,5 +67,5 @@ void build_quad(vec4 curr, vec4 next)
 
 void main()
 {    
-	build_quad(gl_in[0].gl_Position, gs_in[0].position_next);
+	build_quad(gl_in[0].gl_Position, gl_in[1].gl_Position);
 }

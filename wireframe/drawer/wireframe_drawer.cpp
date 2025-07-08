@@ -12,8 +12,12 @@ WireframeDrawer::WireframeDrawer(const Viewport* viewport)
 , program_(0)
 , vertex_array_object_(0)
 , vertex_buffer_object_(0)
+, index_buffer_object_(0)
 , num_vertices_(0)
+, num_indices_(0)
+, index_size_(0)
 , vertices_array_(nullptr)
+, indices_array_(nullptr)
 , pixel_width_(20.0f)
 {
 
@@ -50,6 +54,11 @@ void WireframeDrawer::Destroy()
 		glDeleteBuffers(1, &vertex_buffer_object_);
 		vertex_buffer_object_ = 0;
 	}
+	if (index_buffer_object_ != 0)
+	{
+		glDeleteBuffers(1, &index_buffer_object_);
+		index_buffer_object_ = 0;
+	}
 	if (vertex_array_object_ != 0)
 	{
 		glDeleteVertexArrays(1, &vertex_array_object_);
@@ -61,7 +70,7 @@ void WireframeDrawer::Render()
 	ActivateShader();
 
 	glBindVertexArray(vertex_array_object_);
-	glDrawArrays(GL_POINTS, 0, num_vertices_ - 1);
+	glDrawElements(GL_LINES, num_indices_, GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
 
 	DeactivateShader();
@@ -78,11 +87,26 @@ bool WireframeDrawer::CreateData(const Point3DArray& points)
 	vertices_array_ = new uint8_t[num_vertices_ * sizeof(Vertex)];
 	Vertex* vertices = reinterpret_cast<Vertex*>(vertices_array_);
 
+	uint32_t num_segments = num_points - 1;
+
+	num_indices_ = 2 * num_segments;
+	index_size_ = sizeof(uint32_t);
+	indices_array_ = new uint8_t[num_indices_ * index_size_];
+	uint32_t* indices = reinterpret_cast<uint32_t*>(indices_array_);
+
 	// Position
 	uint32_t n = 0;
 	for (uint32_t i = 0; i < num_points; ++i)
 	{
 		vertices[n++].position = points[i];
+	}
+
+	// Indices
+	n = 0;
+	for (uint32_t i = 0; i < num_segments; ++i)
+	{
+		indices[n++] = i;
+		indices[n++] = i+1;
 	}
 
 	return true;
@@ -94,6 +118,11 @@ void WireframeDrawer::FreeArrays()
 		delete[] vertices_array_;
 		vertices_array_ = nullptr;
 	}
+	if (indices_array_ != nullptr)
+	{
+		delete[] indices_array_;
+		indices_array_ = nullptr;
+	}
 }
 void WireframeDrawer::MakeRenderable()
 {
@@ -104,17 +133,18 @@ void WireframeDrawer::MakeRenderable()
 	glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object_);
 	glBufferData(GL_ARRAY_BUFFER, num_vertices_ * sizeof(Vertex), vertices_array_, GL_STATIC_DRAW);
 
+	glGenBuffers(1, &index_buffer_object_);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_object_);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_indices_ * index_size_, indices_array_, GL_STATIC_DRAW);
+
 	static_assert(sizeof(Point3D) == 3*sizeof(float), "Point size mismatch");
 
 	// Attributes layout
 	const GLsizei stride = sizeof(Vertex);
 	const uint8_t* base = nullptr;
 	const uint8_t* curr_offset = base;
-	const uint8_t* next_offset = curr_offset + stride;
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, curr_offset); // vec3 a_position_curr
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, curr_offset); // vec3 a_position
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, next_offset); // vec3 a_position_next
-	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
 
