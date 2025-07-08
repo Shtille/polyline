@@ -1,0 +1,30 @@
+﻿project(wireframe VERSION 1.0.0 LANGUAGES CXX)
+
+set(SRC_FILES
+	main.cpp
+	app.cpp
+	app.h
+	../common/base_app.cpp
+	../common/base_app.h
+	../common/util.cpp
+	../common/util.h
+	../common/types.h
+	../common/viewport.h
+	drawer/wireframe_drawer.cpp
+	drawer/wireframe_drawer.h
+	)
+set(INCLUDES
+	../common
+	)
+set(LIBRARIES
+	glad
+	glfw
+	)
+
+add_executable(${PROJECT_NAME} ${SRC_FILES})
+target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDES})
+target_link_libraries(${PROJECT_NAME} ${LIBRARIES})
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
+set_target_properties(${PROJECT_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${POLYLINE_WORKING_DIRECTORY})
+
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
