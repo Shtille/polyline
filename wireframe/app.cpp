@@ -6,20 +6,24 @@ namespace poly {
 
 Application::Application()
 : BaseApplication()
-, points_()
 , drawer_(&viewport_)
 {
 }
 bool Application::Load()
 {
-	points_ = {
+	Point3DArray vertices = {
 		{-0.5f,  0.0f, 0.0f},
 		{ 0.0f,  0.5f, 0.0f},
 		{ 0.0f, -0.5f, 0.0f},
-		{ 0.5f,  0.0f, 0.0f}
+		{ 0.5f,  0.0f, 0.0f},
+	};
+	IndicesArray indices = {
+		0, 1,
+		1, 2,
+		2, 3,
 	};
 
-	if (!drawer_.Create(points_)) return false;
+	if (!drawer_.Create(vertices, indices)) return false;
 
 	return true;
 }

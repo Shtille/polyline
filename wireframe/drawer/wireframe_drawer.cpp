@@ -26,7 +26,7 @@ WireframeDrawer::~WireframeDrawer()
 {
 	Destroy();
 }
-bool WireframeDrawer::Create(const Point3DArray& points)
+bool WireframeDrawer::Create(const Point3DArray& vertices, const IndicesArray& indices)
 {
 	if (!LoadShaders(
 		"data/shaders/wireframe/wireframe.vs", 
@@ -35,7 +35,7 @@ bool WireframeDrawer::Create(const Point3DArray& points)
 		program_))
 		return false;
 
-	if (!CreateData(points))
+	if (!CreateData(vertices, indices))
 		return false;
 	MakeRenderable();
 
@@ -75,38 +75,31 @@ void WireframeDrawer::Render()
 
 	DeactivateShader();
 }
-bool WireframeDrawer::CreateData(const Point3DArray& points)
+bool WireframeDrawer::CreateData(const Point3DArray& vertices, const IndicesArray& indices)
 {
-	uint32_t num_points = static_cast<uint32_t>(points.size());
-	if (num_points < 2) return false;
+	if (vertices.size() < 2) return false;
 
 	static_assert(sizeof(Vertex) == sizeof(Point3D), "Vertex size mismatch");
 
-	// We add one point before and one point after to have access to previous and next segments.
-	num_vertices_ = num_points;
+	num_vertices_ = static_cast<uint32_t>(vertices.size());
 	vertices_array_ = new uint8_t[num_vertices_ * sizeof(Vertex)];
-	Vertex* vertices = reinterpret_cast<Vertex*>(vertices_array_);
+	Vertex* vertices_data = reinterpret_cast<Vertex*>(vertices_array_);
 
-	uint32_t num_segments = num_points - 1;
-
-	num_indices_ = 2 * num_segments;
+	num_indices_ = static_cast<uint32_t>(indices.size());
 	index_size_ = sizeof(uint32_t);
 	indices_array_ = new uint8_t[num_indices_ * index_size_];
-	uint32_t* indices = reinterpret_cast<uint32_t*>(indices_array_);
+	uint32_t* indices_data = reinterpret_cast<uint32_t*>(indices_array_);
 
 	// Position
-	uint32_t n = 0;
-	for (uint32_t i = 0; i < num_points; ++i)
+	for (uint32_t i = 0; i < num_vertices_; ++i)
 	{
-		vertices[n++].position = points[i];
+		vertices_data[i].position = vertices[i];
 	}
 
 	// Indices
-	n = 0;
-	for (uint32_t i = 0; i < num_segments; ++i)
+	for (uint32_t i = 0; i < num_indices_; ++i)
 	{
-		indices[n++] = i;
-		indices[n++] = i+1;
+		indices_data[i] = indices[i];
 	}
 
 	return true;

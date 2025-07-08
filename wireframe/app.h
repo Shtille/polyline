@@ -14,7 +14,6 @@ public:
 	void Render() override;
 
 private:
-	Point3DArray points_;
 	WireframeDrawer drawer_;
 };
 

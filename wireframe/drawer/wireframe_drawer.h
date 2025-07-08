@@ -14,7 +14,7 @@ public:
 	WireframeDrawer(const Viewport* viewport);
 	~WireframeDrawer();
 
-	bool Create(const Point3DArray& points);
+	bool Create(const Point3DArray& vertices, const IndicesArray& indices);
 	void Destroy();
 
 	void Render();
@@ -26,7 +26,7 @@ protected:
 		Point3D position;
 	};
 
-	bool CreateData(const Point3DArray& points);
+	bool CreateData(const Point3DArray& vertices, const IndicesArray& indices);
 	void FreeArrays();
 	void MakeRenderable();
 
