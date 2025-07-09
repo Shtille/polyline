@@ -13,6 +13,8 @@
 9.  [x] Add square cap.
 10. [x] Add round cap.
 11. [x] Add cap style switch.
+12. [x] Add dash rendering.
+13. [x] Add wireframe rendering.
 
 ## Secondary tasks
 
