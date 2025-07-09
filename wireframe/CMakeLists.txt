@@ -8,8 +8,14 @@ set(SRC_FILES
 	../common/base_app.h
 	../common/util.cpp
 	../common/util.h
+	../common/camera.cpp
+	../common/camera.h
 	../common/types.h
 	../common/viewport.h
+	../common/input_controller.cpp
+	../common/input_controller.h
+	../common/orbit_controller.cpp
+	../common/orbit_controller.h
 	drawer/wireframe_drawer.cpp
 	drawer/wireframe_drawer.h
 	)
@@ -19,6 +25,7 @@ set(INCLUDES
 set(LIBRARIES
 	glad
 	glfw
+	glm
 	)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})

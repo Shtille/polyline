@@ -12,6 +12,8 @@ public:
 
 	virtual bool Load();
 	virtual void Unload();
+
+	virtual void Update();
 	virtual void Render();
 
 	void SetViewport(int width, int height);

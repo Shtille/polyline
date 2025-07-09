@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "viewport.h"
+#include "camera.h"
 
 namespace poly {
 
@@ -11,7 +12,7 @@ namespace poly {
 class WireframeDrawer
 {
 public:
-	WireframeDrawer(const Viewport* viewport);
+	WireframeDrawer(const Viewport* viewport, const Camera* camera);
 	~WireframeDrawer();
 
 	bool Create(const Point3DArray& vertices, const IndicesArray& indices);
@@ -35,6 +36,7 @@ protected:
 
 private:
 	const Viewport* viewport_;
+	const Camera* camera_;
 	uint32_t program_;
 	uint32_t vertex_array_object_;
 	uint32_t vertex_buffer_object_;

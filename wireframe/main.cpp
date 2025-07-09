@@ -8,6 +8,8 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
+void mouse_callback(GLFWwindow* window, int button, int action, int mods);
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos);
 
 static poly::Application* s_app = nullptr;
 
@@ -40,6 +42,8 @@ int main()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	glfwSetMouseButtonCallback(window, mouse_callback);
+	glfwSetCursorPosCallback(window, cursor_position_callback);
 
 	// glad: load all OpenGL function pointers
 	// ---------------------------------------
@@ -65,6 +69,10 @@ int main()
 		// -----
 		processInput(window);
 
+		// update
+		// ------
+		app.Update();
+
 		// render
 		// ------
 		app.Render();
@@ -89,8 +97,7 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
+	s_app->controller()->ProcessInput(window);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -101,4 +108,18 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	// height will be significantly larger than specified on retina displays.
 	glViewport(0, 0, width, height);
 	s_app->SetViewport(width, height);
+}
+
+// A mouse callback
+// ----------------
+void mouse_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	s_app->controller()->ProcessMouse(window, button, action, mods);
+}
+
+// A cursor position callback
+// --------------------------
+void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
+{
+	s_app->controller()->ProcessCursor(window, xpos, ypos);
 }

@@ -2,13 +2,16 @@
 
 #include "util.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include <vector>
 #include <cmath>
 
 namespace poly {
 
-WireframeDrawer::WireframeDrawer(const Viewport* viewport)
+WireframeDrawer::WireframeDrawer(const Viewport* viewport, const Camera* camera)
 : viewport_(viewport)
+, camera_(camera)
 , program_(0)
 , vertex_array_object_(0)
 , vertex_buffer_object_(0)
@@ -149,6 +152,10 @@ void WireframeDrawer::ActivateShader()
 	int location;
 
 	glUseProgram(program_);
+
+	location = glGetUniformLocation(program_, "u_mvp");
+	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera_->projection_view_matrix()));
+
 	location = glGetUniformLocation(program_, "u_viewport");
 	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
 	location = glGetUniformLocation(program_, "u_pixel_width");

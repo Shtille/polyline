@@ -16,6 +16,9 @@ bool BaseApplication::Load()
 void BaseApplication::Unload()
 {
 }
+void BaseApplication::Update()
+{
+}
 void BaseApplication::Render()
 {
 }
