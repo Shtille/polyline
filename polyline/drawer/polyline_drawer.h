@@ -19,19 +19,11 @@ public:
 
 	void Render();
 
-	void SetCapStyle(CapStyle cap_style);
-	void SetJoinStyle(JoinStyle join_style);
-
-	CapStyle cap_style() const;
-	JoinStyle join_style() const;
-
 protected:
 
 	struct Vertex
 	{
 		Point position;
-		float point_type;
-		float distance;
 	};
 
 	bool CreateData(const PointArray& points);
@@ -55,9 +47,6 @@ private:
 	uint8_t* vertices_array_;
 	uint8_t* texture_data_;
 	const float pixel_width_;
-	float miter_limit_;
-	CapStyle cap_style_;
-	JoinStyle join_style_;
 };
 
 } // namespace poly

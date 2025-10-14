@@ -12,9 +12,11 @@ std::string get_title();
 
 static const int kCapKey = GLFW_KEY_C;
 static const int kJoinKey = GLFW_KEY_J;
+static const int kShowKey = GLFW_KEY_SPACE;
 static poly::Application* s_app = nullptr;
 static bool s_cap_key_pressed = false;
 static bool s_join_key_pressed = false;
+static bool s_show_key_pressed = false;
 
 int main()
 {
@@ -165,6 +167,16 @@ void processInput(GLFWwindow *window)
 	else if (glfwGetKey(window, kJoinKey) == GLFW_RELEASE)
 	{
 		s_join_key_pressed = false;
+	}
+	if (glfwGetKey(window, kShowKey) == GLFW_PRESS && !s_show_key_pressed)
+	{
+		s_show_key_pressed = true;
+		s_app->SetShow(!s_app->show());
+		UpdateTitle(window);
+	}
+	else if (glfwGetKey(window, kShowKey) == GLFW_RELEASE)
+	{
+		s_show_key_pressed = false;
 	}
 }
 

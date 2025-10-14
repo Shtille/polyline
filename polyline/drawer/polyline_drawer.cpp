@@ -5,6 +5,74 @@
 #include <vector>
 #include <cmath>
 
+struct Data {
+    int ref;
+    int type; // -1, 0, 1
+    int start;
+    int end;
+};
+typedef std::vector<int> PatternArray;
+typedef std::vector<Data> DataArray;
+
+static void EncodeData(const PatternArray& pattern, DataArray& data)
+{
+    const int pattern_size = static_cast<int>(pattern.size());
+
+    // Calc texture (data) size
+    int size = 0;
+    for (int length : pattern)
+        size += length;
+    data.resize(static_cast<size_t>(size));
+    
+    const int cap_begin = 1;
+    const int distance_step = 1;
+    int distance = 0;
+    int pattern_index = 0;
+    int dash_start = cap_begin;
+    int dash_end = dash_start + pattern[pattern_index];
+    int ref = dash_start;
+    int type = (distance < ref) ? -1 : 0;
+    int breakpoint = (type == 1) ? dash_end : dash_start;
+    
+    for (int i = 0; i < size; ++i)
+    {
+        if (type == -1 && distance >= breakpoint) // breakpoint = dash_start
+        {
+            // Change type from -1 to 0
+            type = 0;
+            // ref remains the same
+            breakpoint = dash_end;
+        }
+        if (type == 0 && distance >= breakpoint) // breakpoint = dash_end
+        {
+            // Change type from 0 to 1
+            type = 1;
+            ref = dash_end;
+            int space_length = pattern[(pattern_index+1) % pattern_size];
+            breakpoint = (dash_end + dash_end + space_length) / 2; // middle of space
+        }
+        if (type == 1 && distance >= breakpoint) // breakpoint = middle of space
+        {
+            // Next dash
+            type = -1;
+            int space_length = pattern[(pattern_index+1) % pattern_size];
+            dash_start = dash_end + space_length;
+            dash_end = dash_start + pattern[(pattern_index+2) % pattern_size];
+            pattern_index += 2;
+            ref = dash_start;
+            breakpoint = dash_start;
+        }
+     
+        Data& d = data[i];
+        d.ref = ref;
+        d.type = type;
+        d.start = dash_start;
+        d.end = dash_end;
+        
+        distance += distance_step;
+    }
+}
+
 namespace poly {
 
 PolylineDrawer::PolylineDrawer(const Viewport* viewport)
@@ -18,9 +86,6 @@ PolylineDrawer::PolylineDrawer(const Viewport* viewport)
 , vertices_array_(nullptr)
 , texture_data_(nullptr)
 , pixel_width_(20.0f)
-, miter_limit_(3.0f)
-, cap_style_(CapStyle::kFlat)
-, join_style_(JoinStyle::kBevel)
 {
 
 }
@@ -73,7 +138,7 @@ void PolylineDrawer::Render()
 	ActivateTexture();
 
 	glBindVertexArray(vertex_array_object_);
-	glDrawArrays(GL_POINTS, 0, num_vertices_ - 3);
+	glDrawArrays(GL_POINTS, 0, num_vertices_ - 1);
 	glBindVertexArray(0);
 
 	DeactivateTexture();
@@ -85,66 +150,33 @@ bool PolylineDrawer::CreateData(const PointArray& points)
 	if (num_points < 2) return false;
 
 	// We add one point before and one point after to have access to previous and next segments.
-	num_vertices_ = num_points + 2;
+	num_vertices_ = num_points;
 	vertices_array_ = new uint8_t[num_vertices_ * sizeof(Vertex)];
 	Vertex* vertices = reinterpret_cast<Vertex*>(vertices_array_);
 
 	// Position
 	uint32_t n = 0;
-	// First point is extrapolated one from the first segment.
-	Point first_point;
-	first_point[0] = points[0][0] + (points[0][0] - points[1][0]);
-	first_point[1] = points[0][1] + (points[0][1] - points[1][1]);
-	vertices[n++].position = first_point;
 	for (uint32_t i = 0; i < num_points; ++i)
 	{
 		const Point& point = points[i];
 		vertices[n++].position = {point[0], point[1]};
 	}
-	// The last point is extrapolated one from the last segment.
-	Point last_point;
-	last_point[0] = points[num_points-1][0] + (points[num_points-1][0] - points[num_points-2][0]);
-	last_point[1] = points[num_points-1][1] + (points[num_points-1][1] - points[num_points-2][1]);
-	vertices[n++].position = last_point;
-
-	// Point type
-	n = 0;
-	vertices[n++].point_type = 0.0f; // value here doesn't matter
-	for (uint32_t i = 0; i < num_points; ++i)
-	{
-		vertices[n++].point_type = (i == 0) ? -1.0f : (i == num_points - 1) ? 1.0f : 0.0f;
-	}
-	vertices[n++].point_type = 0.0f; // value here doesn't matter
-
-	// Distance
-	n = 0;
-	vertices[n++].distance = 0.0f;
-	vertices[n++].distance = 0.0f; // point 0
-	for (uint32_t i = 1; i < num_points; ++i)
-	{
-		const Point& point1 = points[i-1];
-		const Point& point2 = points[i];
-		float dx = point2[0] - point1[0];
-		float dy = point2[1] - point1[1];
-		vertices[n++].distance = sqrt(dx * dx + dy * dy);
-	}
-	vertices[n++].distance = vertices[n-1].distance;
 
 	// Texture data
 	// ------------
-	const std::vector<uint32_t> pattern = {2,1,1,1};
-	texture_width_ = 0;
-	for (uint32_t value : pattern)
-		texture_width_ += value;
-
-	n = 0;
-	texture_data_ = new uint8_t[texture_width_];
-	for (uint32_t i = 0; i < pattern.size(); ++i)
+	const std::vector<int> pattern = {2,4};
+	DataArray data;
+	::EncodeData(pattern, data);
+	uint32_t element_size = sizeof(float) * 4;
+	texture_width_ = static_cast<uint32_t>(data.size());
+	texture_data_ = new uint8_t[texture_width_ * element_size];
+	float* float_data = reinterpret_cast<float*>(texture_data_);
+	for (uint32_t i = 0; i < data.size(); ++i)
 	{
-		uint8_t value = (i % 2) == 0 ? 255 : 0;
-		uint8_t count = pattern[i];
-		while (count--)
-			texture_data_[n++] = value;
+		float_data[4*i  ] = static_cast<float>(data[i].ref);
+		float_data[4*i+1] = static_cast<float>(data[i].type);
+		float_data[4*i+2] = static_cast<float>(data[i].start);
+		float_data[4*i+3] = static_cast<float>(data[i].end);
 	}
 
 	return true;
@@ -176,27 +208,12 @@ void PolylineDrawer::MakeRenderable()
 	// Attributes layout
 	const GLsizei stride = sizeof(Vertex);
 	const uint8_t* base = nullptr;
-	const uint8_t* prev_offset = base;
-	const uint8_t* curr_offset = prev_offset + stride;
+	const uint8_t* curr_offset = base;
 	const uint8_t* next_offset = curr_offset + stride;
-	const uint8_t* point_type_curr_offset = curr_offset + sizeof(Point);
-	const uint8_t* point_type_next_offset = point_type_curr_offset + stride;
-	const uint8_t* distance_curr_offset = point_type_curr_offset + sizeof(float);
-	const uint8_t* distance_next_offset = distance_curr_offset + stride;
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, prev_offset); // vec2 a_position_prev
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, stride, curr_offset); // vec2 a_position_curr
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, curr_offset); // vec2 a_position_curr
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, next_offset); // vec2 a_position_next
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, next_offset); // vec2 a_position_next
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, stride, point_type_curr_offset); // float a_point_type_curr
-	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, stride, point_type_next_offset); // float a_point_type_next
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(5, 1, GL_FLOAT, GL_FALSE, stride, distance_curr_offset); // float a_distance_curr
-	glEnableVertexAttribArray(5);
-	glVertexAttribPointer(6, 1, GL_FLOAT, GL_FALSE, stride, distance_next_offset); // float a_distance_next
-	glEnableVertexAttribArray(6);
 
 	glBindVertexArray(0);
 
@@ -211,7 +228,7 @@ void PolylineDrawer::MakeRenderable()
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_R8, (GLsizei)texture_width_, 0, GL_RED, GL_UNSIGNED_BYTE, texture_data_);
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, (GLsizei)texture_width_, 0, GL_RGBA, GL_FLOAT, texture_data_);
 
 	// Finally
 	FreeArrays();
@@ -222,20 +239,19 @@ void PolylineDrawer::ActivateShader()
 
 	const float dash_unit = pixel_width_;
 	const float dash_period = dash_unit * static_cast<float>(texture_width_);
+	const float dash_phase = dash_unit;
 
 	glUseProgram(program_);
 	location = glGetUniformLocation(program_, "u_viewport");
 	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
 	location = glGetUniformLocation(program_, "u_pixel_width");
 	glUniform1f(location, pixel_width_);
-	location = glGetUniformLocation(program_, "u_miter_limit");
-	glUniform1f(location, miter_limit_);
-	location = glGetUniformLocation(program_, "u_cap_style");
-	glUniform1i(location, static_cast<int>(cap_style_));
-	location = glGetUniformLocation(program_, "u_join_style");
-	glUniform1i(location, static_cast<int>(join_style_));
+	location = glGetUniformLocation(program_, "u_dash_unit");
+	glUniform1f(location, dash_unit);
 	location = glGetUniformLocation(program_, "u_dash_period");
 	glUniform1f(location, dash_period);
+	location = glGetUniformLocation(program_, "u_dash_phase");
+	glUniform1f(location, dash_phase);
 	location = glGetUniformLocation(program_, "u_texture");
 	glUniform1i(location, 0);
 }
@@ -250,22 +266,6 @@ void PolylineDrawer::ActivateTexture()
 void PolylineDrawer::DeactivateTexture()
 {
 	glBindTexture(GL_TEXTURE_1D, 0);
-}
-void PolylineDrawer::SetCapStyle(CapStyle cap_style)
-{
-	cap_style_ = cap_style;
-}
-void PolylineDrawer::SetJoinStyle(JoinStyle join_style)
-{
-	join_style_ = join_style;
-}
-CapStyle PolylineDrawer::cap_style() const
-{
-	return cap_style_;
-}
-JoinStyle PolylineDrawer::join_style() const
-{
-	return join_style_;
 }
 
 } // namespace poly

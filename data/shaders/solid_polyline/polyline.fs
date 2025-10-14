@@ -32,5 +32,5 @@ void main()
 		if (dist > radius)
 			discard;
 	}
-	color = vec4(1.0, 0.0, 0.0, 0.0);
+	color = vec4(0.0, 1.0, 0.0, 1.0);
 }
