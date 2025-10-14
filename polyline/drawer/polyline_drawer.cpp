@@ -14,7 +14,19 @@ struct Data {
 typedef std::vector<int> PatternArray;
 typedef std::vector<Data> DataArray;
 
-static void EncodeData(const PatternArray& pattern, DataArray& data)
+int GetCapSize(poly::CapStyle cap_style)
+{
+	switch (cap_style)
+	{
+	case poly::CapStyle::kRound:
+	case poly::CapStyle::kSquare:
+		return 1;
+	case poly::CapStyle::kFlat:
+	default:
+		return 0;
+	}
+}
+static void EncodeData(poly::CapStyle cap_style, const PatternArray& pattern, DataArray& data)
 {
     const int pattern_size = static_cast<int>(pattern.size());
 
@@ -24,8 +36,7 @@ static void EncodeData(const PatternArray& pattern, DataArray& data)
         size += length;
     data.resize(static_cast<size_t>(size));
     
-    const int cap_begin = 1;
-    const int distance_step = 1;
+    const int cap_begin = ::GetCapSize(cap_style);
     int distance = 0;
     int pattern_index = 0;
     int dash_start = cap_begin;
@@ -69,7 +80,7 @@ static void EncodeData(const PatternArray& pattern, DataArray& data)
         d.start = dash_start;
         d.end = dash_end;
         
-        distance += distance_step;
+        ++distance;
     }
 }
 
@@ -86,6 +97,7 @@ PolylineDrawer::PolylineDrawer(const Viewport* viewport)
 , vertices_array_(nullptr)
 , texture_data_(nullptr)
 , pixel_width_(20.0f)
+, cap_style_(CapStyle::kRound)
 {
 
 }
@@ -164,9 +176,9 @@ bool PolylineDrawer::CreateData(const PointArray& points)
 
 	// Texture data
 	// ------------
-	const std::vector<int> pattern = {2,4};
+	const std::vector<int> pattern = {2,3,0,3};//{2,4};
 	DataArray data;
-	::EncodeData(pattern, data);
+	::EncodeData(cap_style_, pattern, data);
 	uint32_t element_size = sizeof(float) * 4;
 	texture_width_ = static_cast<uint32_t>(data.size());
 	texture_data_ = new uint8_t[texture_width_ * element_size];
@@ -230,6 +242,10 @@ void PolylineDrawer::MakeRenderable()
 
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA32F, (GLsizei)texture_width_, 0, GL_RGBA, GL_FLOAT, texture_data_);
 
+	// Enable blending
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	// Finally
 	FreeArrays();
 }
@@ -239,13 +255,15 @@ void PolylineDrawer::ActivateShader()
 
 	const float dash_unit = pixel_width_;
 	const float dash_period = dash_unit * static_cast<float>(texture_width_);
-	const float dash_phase = dash_unit;
+	const float dash_phase = dash_unit * static_cast<float>(::GetCapSize(cap_style_));
 
 	glUseProgram(program_);
 	location = glGetUniformLocation(program_, "u_viewport");
 	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
 	location = glGetUniformLocation(program_, "u_pixel_width");
 	glUniform1f(location, pixel_width_);
+	location = glGetUniformLocation(program_, "u_cap_style");
+	glUniform1i(location, static_cast<int>(cap_style_));
 	location = glGetUniformLocation(program_, "u_dash_unit");
 	glUniform1f(location, dash_unit);
 	location = glGetUniformLocation(program_, "u_dash_period");
@@ -266,6 +284,14 @@ void PolylineDrawer::ActivateTexture()
 void PolylineDrawer::DeactivateTexture()
 {
 	glBindTexture(GL_TEXTURE_1D, 0);
+}
+void PolylineDrawer::SetCapStyle(CapStyle cap_style)
+{
+	cap_style_ = cap_style;
+}
+CapStyle PolylineDrawer::cap_style() const
+{
+	return cap_style_;
 }
 
 } // namespace poly

@@ -1,5 +1,6 @@
 #version 330 core
 
+uniform int u_cap_style;
 uniform float u_dash_unit;
 uniform float u_dash_period;
 uniform float u_dash_phase;
@@ -11,9 +12,19 @@ noperspective in vec2 v_position;
 flat in float v_length;
 flat in float v_radius;
 
-float cap( float u, float v)
+#define CAP_FLAT 0
+#define CAP_SQUARE 1
+#define CAP_ROUND 2
+
+float cap(float u, float v)
 {
-	return sqrt(u*u+v*v);
+	if (u_cap_style == CAP_FLAT)
+		discard;
+	else if (u_cap_style == CAP_SQUARE)
+		return max(u,v);
+	else if (u_cap_style == CAP_ROUND)
+		return sqrt(u*u+v*v);
+	discard;
 }
 
 float div(float y, float x)
@@ -75,8 +86,10 @@ void main()
 	else if (dash_type > 0.0) // 1
 		d = cap(dash_ref - u, v);
 
-	if (d > radius)
-		discard;
-
-	color = vec4(1.0, 0.0, 0.0, 1.0);
+	float t = radius - 1.0;
+	d -= t;
+	if (d < 0.0)
+		color = vec4(1.0, 0.0, 0.0, 1.0);
+	else
+		color = vec4(1.0, 0.0, 0.0, exp(-d*d));
 }

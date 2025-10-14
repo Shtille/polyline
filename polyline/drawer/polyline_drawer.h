@@ -19,6 +19,10 @@ public:
 
 	void Render();
 
+	void SetCapStyle(CapStyle cap_style);
+
+	CapStyle cap_style() const;
+
 protected:
 
 	struct Vertex
@@ -47,6 +51,7 @@ private:
 	uint8_t* vertices_array_;
 	uint8_t* texture_data_;
 	const float pixel_width_;
+	CapStyle cap_style_;
 };
 
 } // namespace poly
