@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <array>
+
 #include "base_app.h"
 #include "camera.h"
 #include "orbit_controller.h"
@@ -23,6 +25,7 @@ private:
 	Camera camera_;
 	OrbitController controller_;
 	WireframeDrawer drawer_;
+	std::array<float, 4> background_color_;
 };
 
 } // namespace poly

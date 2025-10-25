@@ -1,5 +1,7 @@
 #version 330 core
 
+uniform vec4 u_color;
+
 out vec4 color;
 
 noperspective in vec2 v_position;
@@ -12,18 +14,22 @@ void main()
 	float len = v_length;
 	float radius = v_radius;
 
+	float d = abs(position.y);
+
 	if (position.x < 0.0)
 	{
 		float dist = length(position); // = distance(position, vec2(0.0))
-		if (dist > radius)
-			discard;
+		d = dist;
 	}
 	else if (position.x > len)
 	{
 		float dist = length(vec2(position.x - len, position.y)); // = distance(position, vec2(len, 0.0))
-		if (dist > radius)
-			discard;
+		d = dist;
 	}
 
-	color = vec4(1.0, 0.0, 0.0, 1.0);
+	d += 1.0 - radius;
+	if (d < 0.0)
+		color = u_color;
+	else
+		color = vec4(u_color.rgb, u_color.a * exp(-d*d));
 }

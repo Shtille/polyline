@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <array>
+
 #include "types.h"
 #include "viewport.h"
 #include "camera.h"
@@ -47,6 +49,7 @@ private:
 	uint8_t* vertices_array_;
 	uint8_t* indices_array_;
 	float pixel_width_;
+	std::array<float, 4> color_;
 };
 
 } // namespace poly

@@ -22,6 +22,7 @@ WireframeDrawer::WireframeDrawer(const Viewport* viewport, const Camera* camera)
 , vertices_array_(nullptr)
 , indices_array_(nullptr)
 , pixel_width_(20.0f)
+, color_({0.0f, 0.0f, 0.0f, 1.0f})
 {
 
 }
@@ -160,6 +161,8 @@ void WireframeDrawer::ActivateShader()
 	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
 	location = glGetUniformLocation(program_, "u_pixel_width");
 	glUniform1f(location, pixel_width_);
+	location = glGetUniformLocation(program_, "u_color");
+	glUniform4fv(location, 1, &color_[0]);
 }
 void WireframeDrawer::DeactivateShader()
 {

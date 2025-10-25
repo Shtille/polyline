@@ -2,6 +2,14 @@
 
 #include <glad/glad.h>
 
+static void SetInitialStates()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_DEPTH_TEST);
+}
+
 namespace poly {
 
 Application::Application()
@@ -9,6 +17,7 @@ Application::Application()
 , camera_(&viewport_, 5.0f)
 , controller_(&camera_)
 , drawer_(&viewport_, &camera_)
+, background_color_({1.0f, 1.0f, 1.0f, 1.0f})
 {
 }
 bool Application::Load()
@@ -47,6 +56,9 @@ bool Application::Load()
 
 	if (!drawer_.Create(vertices, indices)) return false;
 
+	// Set initial OpenGL states
+	::SetInitialStates();
+
 	return true;
 }
 void Application::Unload()
@@ -59,8 +71,12 @@ void Application::Update()
 }
 void Application::Render()
 {
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(
+		background_color_[0], 
+		background_color_[1],
+		background_color_[2],
+		background_color_[3]);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	drawer_.Render();
 }
