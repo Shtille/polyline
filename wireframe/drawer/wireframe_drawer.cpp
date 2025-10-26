@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
+#include <set>
 #include <cmath>
 
 namespace poly {
@@ -183,10 +184,6 @@ bool WireframeDrawer::CreateData(const Point3DArray& vertices, const IndicesArra
 	indices_array_ = new uint8_t[num_indices_ * index_size_];
 	uint32_t* indices_data = reinterpret_cast<uint32_t*>(indices_array_);
 
-	circle_num_indices_ = static_cast<uint32_t>(vertices.size());
-	circle_indices_array_ = new uint8_t[circle_num_indices_ * index_size_];
-	uint32_t* circle_indices_data = reinterpret_cast<uint32_t*>(circle_indices_array_);
-
 	// Position
 	for (uint32_t i = 0; i < num_vertices_; ++i)
 	{
@@ -199,10 +196,20 @@ bool WireframeDrawer::CreateData(const Point3DArray& vertices, const IndicesArra
 		indices_data[i] = indices[i];
 	}
 
+	// We need list of unique vertex indices for rendering circles
+	std::set<uint32_t> unique_indices;
+	for (uint32_t index : indices)
+		unique_indices.insert(index);
+
+	circle_num_indices_ = static_cast<uint32_t>(unique_indices.size());
+	circle_indices_array_ = new uint8_t[circle_num_indices_ * index_size_];
+	uint32_t* circle_indices_data = reinterpret_cast<uint32_t*>(circle_indices_array_);
+
 	// Circle indices
-	for (uint32_t i = 0; i < circle_num_indices_; ++i)
+	uint32_t n = 0;
+	for (uint32_t index : unique_indices)
 	{
-		circle_indices_data[i] = i;
+		circle_indices_data[n++] = index;
 	}
 
 	return true;
