@@ -29,6 +29,9 @@ protected:
 		Point3D position;
 	};
 
+	void RenderClassic();
+	void RenderByCircles();
+
 	bool CreateData(const Point3DArray& vertices, const IndicesArray& indices);
 	void FreeArrays();
 	void MakeRenderable();
@@ -40,14 +43,20 @@ private:
 	const Viewport* viewport_;
 	const Camera* camera_;
 	uint32_t program_;
+	uint32_t quad_program_;
+	uint32_t circle_program_;
 	uint32_t vertex_array_object_;
+	uint32_t circle_vertex_array_object_;
 	uint32_t vertex_buffer_object_;
 	uint32_t index_buffer_object_;
+	uint32_t circle_index_buffer_object_;
 	uint32_t num_vertices_;
 	uint32_t num_indices_;
+	uint32_t circle_num_indices_;
 	uint32_t index_size_;
 	uint8_t* vertices_array_;
 	uint8_t* indices_array_;
+	uint8_t* circle_indices_array_;
 	float pixel_width_;
 	std::array<float, 4> color_;
 };
