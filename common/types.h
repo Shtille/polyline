@@ -12,6 +12,8 @@ typedef std::vector<Point> PointArray;
 typedef std::array<float, 3> Point3D;
 typedef std::vector<Point3D> Point3DArray;
 
+typedef std::array<float, 4> Color;
+
 typedef std::vector<uint32_t> IndicesArray;
 
 enum class CapStyle {

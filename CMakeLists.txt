@@ -11,6 +11,7 @@ set(POLYLINE_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_subdirectory(deps)
 add_subdirectory(polyline)
+add_subdirectory(polyline_complex)
 add_subdirectory(wireframe)
 
 if (BUILD_TESTS)
