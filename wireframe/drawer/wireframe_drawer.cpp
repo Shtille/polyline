@@ -28,7 +28,7 @@ WireframeDrawer::WireframeDrawer(const Viewport* viewport, const Camera* camera)
 , vertices_array_(nullptr)
 , indices_array_(nullptr)
 , circle_indices_array_(nullptr)
-, pixel_width_(20.0f)
+, line_width_(20.0f)
 , color_({0.0f, 0.0f, 0.0f, 1.0f})
 {
 
@@ -133,6 +133,14 @@ void WireframeDrawer::RenderByCircles()
 {
 	int location;
 
+	float soft_radius = 1.5f;
+	float hard_radius = line_width_ * 0.5f - 0.5f * soft_radius;
+	if (hard_radius < 0.0f)
+	{
+		hard_radius = 0.0f;
+		soft_radius = 1.0f;
+	}
+
 	glDepthMask(GL_FALSE);
 
 	// Render quads
@@ -141,8 +149,10 @@ void WireframeDrawer::RenderByCircles()
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera_->projection_view_matrix()));
 	location = glGetUniformLocation(quad_program_, "u_viewport");
 	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
-	location = glGetUniformLocation(quad_program_, "u_pixel_width");
-	glUniform1f(location, pixel_width_);
+	location = glGetUniformLocation(quad_program_, "u_hard_radius");
+	glUniform1f(location, hard_radius);
+	location = glGetUniformLocation(quad_program_, "u_soft_radius");
+	glUniform1f(location, soft_radius);
 	location = glGetUniformLocation(quad_program_, "u_color");
 	glUniform4fv(location, 1, &color_[0]);
 
@@ -156,8 +166,10 @@ void WireframeDrawer::RenderByCircles()
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(camera_->projection_view_matrix()));
 	location = glGetUniformLocation(circle_program_, "u_viewport");
 	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
-	location = glGetUniformLocation(circle_program_, "u_pixel_width");
-	glUniform1f(location, pixel_width_);
+	location = glGetUniformLocation(quad_program_, "u_hard_radius");
+	glUniform1f(location, hard_radius);
+	location = glGetUniformLocation(quad_program_, "u_soft_radius");
+	glUniform1f(location, soft_radius);
 	location = glGetUniformLocation(circle_program_, "u_color");
 	glUniform4fv(location, 1, &color_[0]);
 
@@ -296,7 +308,7 @@ void WireframeDrawer::ActivateShader()
 	location = glGetUniformLocation(program_, "u_viewport");
 	glUniform4f(location, 0.0f, 0.0f, (float)viewport_->width, (float)viewport_->height);
 	location = glGetUniformLocation(program_, "u_pixel_width");
-	glUniform1f(location, pixel_width_);
+	glUniform1f(location, line_width_);
 	location = glGetUniformLocation(program_, "u_color");
 	glUniform4fv(location, 1, &color_[0]);
 }

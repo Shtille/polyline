@@ -6,6 +6,7 @@
 #include "camera.h"
 #include "orbit_controller.h"
 #include "drawer/wireframe_drawer.h"
+#include "drawer/quad_drawer.h"
 
 namespace poly {
 
@@ -25,6 +26,7 @@ private:
 	Camera camera_;
 	OrbitController controller_;
 	WireframeDrawer drawer_;
+	QuadDrawer quad_drawer_;
 	std::array<float, 4> background_color_;
 };
 

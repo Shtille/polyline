@@ -22,6 +22,8 @@ public:
 
 	void Render();
 
+	void SetLineWidth(float width) { line_width_ = width; }
+
 protected:
 
 	struct Vertex
@@ -57,7 +59,7 @@ private:
 	uint8_t* vertices_array_;
 	uint8_t* indices_array_;
 	uint8_t* circle_indices_array_;
-	float pixel_width_;
+	float line_width_; //!< line width in pixels
 	std::array<float, 4> color_;
 };
 

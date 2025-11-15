@@ -4,10 +4,10 @@ layout (lines) in;
 layout (triangle_strip, max_vertices = 4) out;
 
 uniform vec4 u_viewport;
-uniform float u_pixel_width;
+uniform float u_hard_radius;
+uniform float u_soft_radius;
 
 noperspective out vec2 v_position;
-flat out float v_radius;
 
 vec2 project(vec4 clip)
 {
@@ -32,7 +32,7 @@ void build_quad(vec4 curr, vec4 next)
 	d2 /= segment_length; // normalize
 	vec2 n2 = vec2(-d2.y, d2.x);
 
-	float w = u_pixel_width * 0.5;
+	float w = u_hard_radius + u_soft_radius;
 
 	vec2 offset_y = n2 * w;
 	float cap_offset_curr = 0.0;
@@ -43,19 +43,15 @@ void build_quad(vec4 curr, vec4 next)
 	// Quad
 	gl_Position = unproject(screen_curr + offset_y + curr_offset_x, curr.z, curr.w); // left top
 	v_position = vec2(cap_offset_curr, w);
-	v_radius = w;
 	EmitVertex();
 	gl_Position = unproject(screen_curr - offset_y + curr_offset_x, curr.z, curr.w); // left bottom
 	v_position = vec2(cap_offset_curr, -w);
-	v_radius = w;
 	EmitVertex();
 	gl_Position = unproject(screen_next + offset_y + next_offset_x, next.z, next.w); // right top
 	v_position = vec2(segment_length + cap_offset_next, w);
-	v_radius = w;
 	EmitVertex();   
 	gl_Position = unproject(screen_next - offset_y + next_offset_x, next.z, next.w); // right bottom
 	v_position = vec2(segment_length + cap_offset_next, -w);
-	v_radius = w;
 	EmitVertex();
 	EndPrimitive();
 }

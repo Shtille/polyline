@@ -1,4 +1,4 @@
-﻿#version 330 core
+#version 330 core
 
 layout (location = 0) in vec2 a_position_prev;
 layout (location = 1) in vec2 a_position_curr;

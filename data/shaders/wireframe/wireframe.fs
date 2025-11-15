@@ -27,9 +27,14 @@ void main()
 		d = dist;
 	}
 
-	d += 1.0 - radius;
-	if (d < 0.0)
-		color = u_color;
+	// d += 1.0 - radius;
+	// if (d < 0.0)
+	// 	color = u_color;
+	// else
+	// 	color = vec4(u_color.rgb, u_color.a * exp(-d*d));
+	color = u_color;
+	if (d > radius)
+		color.a = 0.0;
 	else
-		color = vec4(u_color.rgb, u_color.a * exp(-d*d));
+		color.a *= pow((radius - d)/radius, 1.5);
 }

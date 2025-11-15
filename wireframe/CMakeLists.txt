@@ -18,6 +18,8 @@ set(SRC_FILES
 	../common/orbit_controller.h
 	drawer/wireframe_drawer.cpp
 	drawer/wireframe_drawer.h
+	drawer/quad_drawer.cpp
+	drawer/quad_drawer.h
 	)
 set(INCLUDES
 	../common
