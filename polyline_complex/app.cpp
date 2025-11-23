@@ -5,7 +5,9 @@
 static void SetInitialStates()
 {
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glBlendEquation(GL_MAX);
 
 	glEnable(GL_DEPTH_TEST);
 }
@@ -53,7 +55,7 @@ bool Application::Load()
 	glBindTexture(GL_TEXTURE_2D, color_texture_);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, framebuffer_width_, framebuffer_height_, 0, GL_RGBA, GL_HALF_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, framebuffer_width_, framebuffer_height_, 0, GL_RED, GL_HALF_FLOAT, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Create depth renderbuffer

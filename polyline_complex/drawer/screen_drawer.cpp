@@ -122,10 +122,17 @@ void ScreenDrawer::ActivateShader()
 {
 	int location;
 
+	const Color kBackgroundColor = {0.0f, 0.0f, 0.0f, 1.0f};
+	const Color kObjectColor = {1.0f, 1.0f, 1.0f, 1.0f};
+
 	glUseProgram(program_);
 
 	location = glGetUniformLocation(program_, "u_texture");
 	glUniform1i(location, 0);
+	location = glGetUniformLocation(program_, "u_background_color");
+	glUniform4fv(location, 1, &kBackgroundColor[0]);
+	location = glGetUniformLocation(program_, "u_object_color");
+	glUniform4fv(location, 1, &kObjectColor[0]);
 }
 void ScreenDrawer::DeactivateShader()
 {
