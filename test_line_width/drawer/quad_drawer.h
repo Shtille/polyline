@@ -1,0 +1,50 @@
+﻿#pragma once
+
+#include "types.h"
+#include "viewport.h"
+
+namespace poly {
+
+/**
+ * @brief      This class describes a quad drawer with geometry shader.
+ */
+class QuadDrawer
+{
+public:
+	QuadDrawer(const Viewport* viewport);
+	~QuadDrawer();
+
+	bool Create(const PointArray& points);
+	void Destroy();
+
+	void Render();
+
+	uint32_t num_vertices() const { return num_vertices_; }
+
+	void SetLineWidth(float width) { pixel_width_ = width; }
+
+protected:
+
+	struct Vertex
+	{
+		Point position;
+	};
+
+	bool CreateData(const PointArray& points);
+	void FreeArrays();
+	void MakeRenderable();
+
+	void ActivateShader();
+	void DeactivateShader();
+
+private:
+	const Viewport* viewport_;
+	uint32_t program_;
+	uint32_t vertex_array_object_;
+	uint32_t vertex_buffer_object_;
+	uint32_t num_vertices_;
+	uint8_t* vertices_array_;
+	float pixel_width_;
+};
+
+} // namespace poly

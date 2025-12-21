@@ -16,5 +16,6 @@ add_subdirectory(wireframe)
 
 if (BUILD_TESTS)
 	add_subdirectory(test_blending)
+	add_subdirectory(test_stl)
 	add_subdirectory(tests)
 endif (BUILD_TESTS)

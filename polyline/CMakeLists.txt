@@ -27,6 +27,7 @@ set(INCLUDES
 set(LIBRARIES
 	glad
 	glfw
+	glm
 	)
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})

@@ -199,5 +199,41 @@ namespace poly {
 			glDeleteShader(geometryShader);
 		return true;
 	}
+	void MakeMinimum(const glm::vec3& pos, glm::vec3& min_pos)
+	{
+		if (min_pos.x > pos.x)
+			min_pos.x = pos.x;
+		if (min_pos.y > pos.y)
+			min_pos.y = pos.y;
+		if (min_pos.z > pos.z)
+			min_pos.z = pos.z;
+	}
+	void MakeMaximum(const glm::vec3& pos, glm::vec3& max_pos)
+	{
+		if (max_pos.x < pos.x)
+			max_pos.x = pos.x;
+		if (max_pos.y < pos.y)
+			max_pos.y = pos.y;
+		if (max_pos.z < pos.z)
+			max_pos.z = pos.z;
+	}
+	float MinimumComponent(const glm::vec3& pos)
+	{
+		float value = pos.x;
+		if (value > pos.y)
+			value = pos.y;
+		if (value > pos.z)
+			value = pos.z;
+		return value;
+	}
+	float MaximumComponent(const glm::vec3& pos)
+	{
+		float value = pos.x;
+		if (value < pos.y)
+			value = pos.y;
+		if (value < pos.z)
+			value = pos.z;
+		return value;
+	}
 
 } // namespace poly

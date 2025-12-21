@@ -1,21 +1,28 @@
-﻿project(performance_test VERSION 1.0.0 LANGUAGES CXX)
+﻿project(test_line_width VERSION 1.0.0 LANGUAGES CXX)
 
 set(SRC_FILES
 	main.cpp
-	time_elapsed_query.cpp
-	time_elapsed_query.h
+	app.cpp
+	app.h
+	../common/base_app.cpp
+	../common/base_app.h
 	../common/util.cpp
 	../common/util.h
+	../common/camera.cpp
+	../common/camera.h
 	../common/types.h
 	../common/viewport.h
-	../polyline/drawer/old_quad_drawer.cpp
-	../polyline/drawer/old_quad_drawer.h
-	../polyline/drawer/quad_drawer.cpp
-	../polyline/drawer/quad_drawer.h
+	../common/input_controller.cpp
+	../common/input_controller.h
+	../common/orbit_controller.cpp
+	../common/orbit_controller.h
+	drawer/wireframe_drawer.cpp
+	drawer/wireframe_drawer.h
+	drawer/quad_drawer.cpp
+	drawer/quad_drawer.h
 	)
 set(INCLUDES
 	../common
-	../polyline
 	)
 set(LIBRARIES
 	glad

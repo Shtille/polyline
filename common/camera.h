@@ -15,14 +15,19 @@ public:
 	void RotateX(float value);
 	void RotateY(float value);
 
+	void ObserveObject(const glm::vec3& min_pos, const glm::vec3& max_pos);
+
 	const glm::mat4& projection_view_matrix() const;
 
 private:
 	const Viewport* viewport_;
 	glm::mat4 projection_view_matrix_;
+	glm::vec3 center_;
+	float fovy_;
 	float angle_x_;
 	float angle_y_;
 	float distance_;
+	float observe_multiplier_;
 	bool matrix_dirty_;
 };
 
