@@ -1,8 +1,11 @@
 ﻿#include "util.h"
 
+#include <glm/geometric.hpp> // glm::dot
+
 #include <string>
 #include <vector>
 #include <cstdio>
+#include <cmath>
 
 static bool ReadFile(const char* filename, std::string& data)
 {
@@ -234,6 +237,36 @@ namespace poly {
 		if (value < pos.z)
 			value = pos.z;
 		return value;
+	}
+	glm::vec3 GetBoundingSphereCenter(const glm::vec3& min, const glm::vec3& max)
+	{
+		return 0.5f * (min + max);
+	}
+	float GetBoundingSphereRadius(const glm::vec3& min, const glm::vec3& max)
+	{
+		glm::vec3 center = GetBoundingSphereCenter(min, max);
+
+		// All 8 box points
+		const glm::vec3 points[] = {
+			glm::vec3(min.x, min.y, min.z),
+			glm::vec3(min.x, min.y, max.z),
+			glm::vec3(min.x, max.y, min.z),
+			glm::vec3(min.x, max.y, max.z),
+
+			glm::vec3(max.x, min.y, min.z),
+			glm::vec3(max.x, min.y, max.z),
+			glm::vec3(max.x, max.y, min.z),
+			glm::vec3(max.x, max.y, max.z),
+		};
+		float max_size_sqr = 0.0f;
+		for (auto& point : points)
+		{
+			glm::vec3 offset = point - center;
+			float size_sqr = glm::dot(offset, offset);
+			if (max_size_sqr < size_sqr)
+				max_size_sqr = size_sqr;
+		}
+		return std::sqrtf(max_size_sqr);
 	}
 
 } // namespace poly

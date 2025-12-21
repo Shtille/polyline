@@ -28,6 +28,8 @@ private:
 	float angle_y_;
 	float distance_;
 	float observe_multiplier_;
+	float near_;
+	float far_;
 	bool matrix_dirty_;
 };
 

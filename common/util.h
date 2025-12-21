@@ -10,5 +10,7 @@ namespace poly {
 	void MakeMaximum(const glm::vec3& pos, glm::vec3& max_pos);
 	float MinimumComponent(const glm::vec3& pos);
 	float MaximumComponent(const glm::vec3& pos);
+	glm::vec3 GetBoundingSphereCenter(const glm::vec3& min, const glm::vec3& max);
+	float GetBoundingSphereRadius(const glm::vec3& min, const glm::vec3& max);
 
 } // namespace poly
